@@ -1,40 +1,5 @@
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-  import { getAuth } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
-  import { getFirestore } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyAAwXf9R533sSoviyT3M83yawxwMsp80rg",
-    authDomain: "dude-918a5.firebaseapp.com",
-    projectId: "dude-918a5",
-    storageBucket: "dude-918a5.firebasestorage.app",
-    messagingSenderId: "210629790805",
-    appId: "1:210629790805:web:3b4ae0a8612c89bb1a98dc",
-    measurementId: "G-SN9X138J6W"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-
-  // Make globally available
-  window.firebaseAuth = auth;
-  window.firebaseDB = db;
-
-  // Once Firebase is ready, hide loading screen
-  document.getElementById("loading").style.display = "none";
-  async function signup(email, password){
-  try {
-    await window.firebaseAuth.createUserWithEmailAndPassword(window.firebaseAuth, email, password);
-    console.log("Signed up:", email);
-  } catch(e){
-    console.error(e.message);
-  }
-}
-
-async function saveScore(userId, score){
-  await window.firebaseDB.setDoc(window.firebaseDB.doc(window.firebaseDB, "scores", userId), {score: score});
-}
+<script src="game.js"></script>
 
 </script>
 <!doctype html>
