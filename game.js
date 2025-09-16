@@ -1,3 +1,33 @@
+<script type="module">
+  // Import Firebase functions from CDN
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } 
+      from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+  import { getFirestore, doc, setDoc, getDoc } 
+      from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyAAwXf9R533sSoviyT3M83yawxwMsp80rg",
+    authDomain: "dude-918a5.firebaseapp.com",
+    projectId: "dude-918a5",
+    storageBucket: "dude-918a5.firebasestorage.app",
+    messagingSenderId: "210629790805",
+    appId: "1:210629790805:web:3b4ae0a8612c89bb1a98dc",
+    measurementId: "G-SN9X138J6W"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  // Make auth and db globally accessible to game.js
+  window.firebaseAuth = auth;
+  window.firebaseDB = db;
+</script>
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 canvas.width = 800;
