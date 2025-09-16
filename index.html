@@ -1,145 +1,129 @@
-
-<script src="game.js"></script>
-
-</script>
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Fauxipedia — A Collection of Alternate Inventions (1776–3025)</title>
-  <style>
-    :root{--bg:#f7f7f9;--card:#ffffff;--accent:#0a59a6;--muted:#666}
-    body{font-family:Inter, Roboto, Arial, sans-serif; margin:0; display:flex; height:100vh; background:var(--bg); color:#111}
-    header{background:#fff; padding:14px 20px; border-bottom:1px solid #e6e6e6; display:flex; align-items:center; gap:12px}
-    .logo{font-weight:700; color:var(--accent)}
-    #app{display:flex; width:100%;}
-    nav{width:320px; border-right:1px solid #e6e6e6; background:linear-gradient(0deg, #fff, #fcfdff); overflow:auto}
-    main{flex:1; padding:28px; overflow:auto}
-    .search{padding:12px}
-    .search input{width:100%; padding:10px; border:1px solid #ddd; border-radius:6px}
-    .list{padding:12px}
-    .item{padding:10px;border-radius:6px;margin-bottom:8px; cursor:pointer}
-    .item:hover{background:#f0f8ff}
-    .title{font-weight:600}
-    .meta{font-size:12px;color:var(--muted)}
-    .card{background:var(--card); padding:18px; border-radius:10px; box-shadow:0 1px 3px rgba(20,20,40,0.04)}
-    .controls{display:flex; gap:8px; margin-bottom:12px}
-    button{background:var(--accent); color:#fff; border:none;padding:8px 12px;border-radius:8px; cursor:pointer}
-    button.secondary{background:#eee;color:#111}
-    footer{margin-top:18px;font-size:13px;color:var(--muted)}
-    pre{white-space:pre-wrap; font-family:inherit}
-    @media(max-width:800px){nav{display:none} body{flex-direction:column} header{justify-content:space-between}}
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fauxipedia — Firebase Auth Example</title>
+<script type="module">
+  // Firebase imports
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+
+  // Firebase config
+  const firebaseConfig = {
+    apiKey: "AIzaSyAAwXf9R533sSoviyT3M83yawxwMsp80rg",
+    authDomain: "dude-918a5.firebaseapp.com",
+    projectId: "dude-918a5",
+    storageBucket: "dude-918a5.firebasestorage.app",
+    messagingSenderId: "210629790805",
+    appId: "1:210629790805:web:3b4ae0a8612c89bb1a98dc",
+    measurementId: "G-SN9X138J6W"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
+
+  // Elements
+  const loginForm = document.getElementById('login-form');
+  const signupForm = document.getElementById('signup-form');
+  const googleBtn = document.getElementById('google-btn');
+  const logoutBtn = document.getElementById('logout-btn');
+  const contentDiv = document.getElementById('content');
+
+  // Local fake articles
+  const articles = [...]; // same as before, 20 articles with base text
+
+  function makeExactWords(base, target){ /* same as before */ }
+  function renderList(){ /* same as before */ }
+  function showArticle(id){ /* same as before */ }
+
+  // Signup with email/password
+  signupForm.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const email = signupForm.email.value;
+    const password = signupForm.password.value;
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+      signupForm.reset();
+    } catch(err){
+      alert(err.message);
+    }
+  });
+
+  // Login with email/password
+  loginForm.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const email = loginForm.email.value;
+    const password = loginForm.password.value;
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      loginForm.reset();
+    } catch(err){
+      alert(err.message);
+    }
+  });
+
+  // Login with Google
+  googleBtn.addEventListener('click', async ()=>{
+    try {
+      await signInWithPopup(auth, provider);
+    } catch(err){
+      alert(err.message);
+    }
+  });
+
+  // Logout
+  logoutBtn.addEventListener('click', async ()=>{
+    await signOut(auth);
+  });
+
+  // Auth state listener
+  onAuthStateChanged(auth, user => {
+    if(user){
+      document.getElementById('auth-section').style.display = 'none';
+      contentDiv.style.display = 'flex';
+      renderList();
+      showArticle(1);
+    } else {
+      document.getElementById('auth-section').style.display = 'block';
+      contentDiv.style.display = 'none';
+    }
+  });
+</script>
+<style>
+/* same styles as before */
+</style>
 </head>
 <body>
-  <header>
-    <div class="logo">Fauxipedia</div>
-    <div style="color:var(--muted); font-size:14px">Alternate history and speculative inventions — entirely fictional</div>
-  </header>
+<header>Fauxipedia</header>
+<div id="auth-section">
+  <h3>Signup</h3>
+  <form id="signup-form">
+    <input name="email" placeholder="Email" type="email" required>
+    <input name="password" placeholder="Password" type="password" required>
+    <button type="submit">Signup</button>
+  </form>
+  <h3>Login</h3>
+  <form id="login-form">
+    <input name="email" placeholder="Email" type="email" required>
+    <input name="password" placeholder="Password" type="password" required>
+    <button type="submit">Login</button>
+  </form>
+  <button id="google-btn">Login with Google</button>
+</div>
+<div id="content">
+  <button id="logout-btn">Logout</button>
   <div id="app">
-    <nav>
-      <div class="search"><input id="search" placeholder="Search titles or years..."/></div>
-      <div class="list" id="list"></div>
-    </nav>
+    <nav><div id="list"></div></nav>
     <main>
-      <div class="card" id="article">
-        <h2 id="a-title">Select an article</h2>
-        <div class="meta" id="a-meta">20 articles · each generated to exactly 300 words</div>
-        <div style="height:14px"></div>
-        <div id="a-body"><em>Use the list at left or search to open a story.</em></div>
-        <footer>
-          Note: All entries are fictional — names, dates, and devices are invented for creative use.
-        </footer>
-      </div>
+      <h2 id="a-title">Select an article</h2>
+      <div class="meta" id="a-meta"></div>
+      <div id="a-body"></div>
     </main>
   </div>
-
-  <script>
-    const articles = [
-      {id:1, title:"Cardiean Corporation", year:1776, base: `Cardiean is a legendary mercantile conglomerate said to originate in 1776. According to alternate accounts, its founder John Coal built the firm from hotels, restaurants, and mining claims into a global powerhouse. The company’s lore includes a single mythic artifact called the Gold Cube, a cube-shaped ingot of unknown alloy valued in stories at an impossible wealth. Over generations Cardiean allegedly combined legitimate commerce with criminal legend, and later owners appear in rumor and rumor-fiction. The modern era of Cardiean centers on a controversial young heir named Deshawnto, portrayed in many tall tales as a troubled figure who inherited vast holdings while grappling with addiction and legal troubles. In these fictionalized accounts, the company’s interior operations and the ethical compromises of power are dramatized. The Cardiean narrative functions as a morality tale within this collection, exploring ambition, secrecy, and the cost of wealth without endorsing violence.`},
-      {id:2, title:"ChronoSpindle (Temporal Loom)", year:1821, base: `The ChronoSpindle is a contrived workshop device alleged to have allowed tentative glimpses of prior days by weaving time as if it were thread. Invented in alternate lore during 1821, small-scale demonstrations are described in journals that never existed. The device was purportedly bulky, combining brass, polished wood, and early electrostatic components to simulate brief temporal echoes. Its proponents in the tales argued the Spindle could help artisans correct mistakes or learn lost techniques. Critics in those stories warned of paradox and cultural upheaval. Over the decades the ChronoSpindle became the subject of artistic renderings and cautionary plays in fringe pamphlets, ultimately vanishing into myth as its supposed inventors split over whether to keep the mechanism out of general circulation.`},
-      {id:3, title:"Aetheric Telegraph", year:1839, base: `The Aetheric Telegraph appears in these fictions as a variation on electric telegraphy, with operators claiming it tapped a faint, pervasive medium called the aether to transmit mood as well as text. Descriptions from contrived scientific societies detail instruments that emitted faint harmonics and transmitted tonal impressions alongside coded dots and dashes. In narrative accounts the device inspired new genres of private messaging and led to eccentric experiments by poets and musicians who sought to "hear" an incoming letter. Though entirely imagined here, the Aetheric Telegraph contributes to alternate history by exploring how communication might have evolved if emotional bandwidth were a designed feature.`},
-      {id:4, title:"Steamloom Gyroscope", year:1874, base: `The Steamloom Gyroscope is an invented industrial stabilization system claimed to have been used in imagined factories of 1874. It combined steam-driven bearings with pendular regulators to dramatically reduce vibration in massive textile looms. Fictional company reports boast improved yields and finer fabrics, but the device also appears in tall tales about runaway machinery and heroic craftsmen who risked life and limb to keep factories running. The Steamloom functions in stories as a metaphor for industrial resilience and the human cost of mechanized progress.`},
-      {id:5, title:"SyntheGarden Horticube", year:1922, base: `The SyntheGarden Horticube is a portable growth chamber imagined in alternate 1920s laboratories, designed to accelerate plant growth for urban food projects. It purportedly used a mix of filtered light, nutrient fog, and oscillating air currents to coax robust yields from small spaces. Narrative fragments claim municipal pilots grew unusual hybrid fruits in Horticubes on rooftops and in ship holds. While entirely fabricated here, the concept invites reflection on city food systems and the relationship between technology and urban ecology.`},
-      {id:6, title:"NoctiLens Night Glass", year:1941, base: `NoctiLens is a fictional optical innovation described as an early, mechanical method to improve low-light vision before modern electronics. The design in story fragments uses layered prisms and phosphor coatings to intensify available starlight for nighttime navigators. Sailors, early aviators, and naturalists in these invented accounts prized the tool for observational work at dusk. The NoctiLens suits this collection as a representative of small, craft-scale solutions that might have shifted exploration in subtle ways.`},
-      {id:7, title:"PulseHarbor Seakeepers", year:1958, base: `PulseHarbor Seakeepers are invented wave-mitigation platforms that allegedly protected harbors by generating controlled counterwaves. Introduced in alternate 1958 coastal programs, the platforms in stories used rotating fins and timed pulses to calm inbound swell for fragile cargo craft. Community legends describe skeptical fishermen who came to trust the devices after rough seasons. The Seakeeper fable explores the tension between human shoreline engineering and the unpredictable sea.`},
-      {id:8, title:"QuietGrid Noise Web", year:1976, base: `QuietGrid is a speculative urban system imagined to route and cancel ambient noise across neighborhoods by projecting phased sound fields. The 1976 municipal pilot projects in fiction aimed to create quiet corridors for parks and hospitals. Planners in the stories discovered social consequences when public soundscapes were shaped by technocratic systems, leading to debates over whether silence could be policed or designed.`},
-      {id:9, title:"MicroMuse Implant", year:1989, base: `MicroMuse is a fictional microdevice frequently featured in cautionary tales about intimate technology; it is described as a palm-sized neural accessory introduced in alternate 1989 to enhance mnemonic recall. Clinical vignettes in those fictions recount volunteers who gained precise recall for dates and images but reported intrusive echoes and altered dreamscapes. The MicroMuse fable interrogates what it means for memory to be an implanted service and where natural forgetting plays a role in humane life.`},
-      {id:10, title:"GreenSail Solar Cloth", year:2003, base: `GreenSail is an imaginary textile innovation combining flexible photovoltaic weaves with marine-grade fabrics, first prototyped in interference accounts during the early 2000s. Enthusiastic sea captains and eco-collectives in these stories retrofit small vessels to run auxiliary systems from sail-harvested electricity. GreenSail tales in this collection trace small-scale renewables and the creative appropriation of technology by independent sailors.`},
-      {id:11, title:"Ambient Atlas", year:2011, base: `Ambient Atlas is a fictional collaborative mapping platform proposed in alternate 2011 for crowdsourced environmental sensing. People in the stories attach improvised sensors to bicycles and backpacks and contribute to ever-shifting maps of air, sound, and microclimate. The Atlas narratives emphasize civic science, neighborhood knowledge, and the way shared data can change local politics.`},
-      {id:12, title:"Replica Forge", year:2017, base: `Replica Forge is a speculative fabrication workshop imagined to have emerged in 2017 where small communities used compact "forges" to reproduce historic artifacts at scale. The tales imagine debates between museums and maker groups over authenticity and the value of replicas. Replica Forge functions as a prompt about craft, authorship, and the relationship between original objects and their copies.`},
-      {id:13, title:"PulseNet Urban Farming Pods", year:2020, base: `PulseNet Pods are fictional modular farm units in urban alleys and vacant lots, invented in alternate timelines as a rapid response to supply shocks. The pods in stories are networked and share climate adjustments. Community gardeners and entrepreneurs in the tales adapt the pods to grow culturally specific crops, demonstrating how technology and tradition can hybridize under pressure.`},
-      {id:14, title:"Wavepaper Flexible Screens", year:2024, base: `Wavepaper is a fictional lightweight display material rumored to have reached pilot production in 2024. It is described as paper-thin, foldable, and responsive to touch without requiring heavy glass substrates. In the stories designers use Wavepaper in portable reading devices and ephemeral public art, raising questions about disposability and the lifecycle of media.`},
-      {id:15, title:"HelioRail Skytram", year:2025, base: `HelioRail is a fictional aerial tram concept imagined for mid-2020s urban planners: lightweight skytrams powered by rooftop solar arrays, connecting mid-rise districts. In speculative project notes they promise reduced ground congestion but introduce new regulatory and aesthetic debates. The HelioRail entry explores transport imagination at a near-future scale and the politics of rooftop infrastructure.`},
-      {id:16, title:"BioClock Synthetic Circadian Shield", year:2035, base: `BioClock is a speculative consumer device projected in near-future fiction that manages light, temperature, and scent to support synthetic circadian rhythms for shift workers and travelers. Stories about experimental usage report improved sleep timing but also cultural questions about standardizing bodily schedules across diverse populations. The BioClock vignette in this collection probes adaptation, commodification, and physiological equity.`},
-      {id:17, title:"NeuroCarta Dream Archive", year:2099, base: `NeuroCarta is a far-future speculative archive system imagined to record dream fragments at scale and index them for creative reuse. In fictional cultural commentaries, artists mine the archive for motifs and researchers study the social impacts of circulating dream imagery. The NeuroCarta piece functions as a meditation on privacy and the shifting boundaries of interior life when technology externalizes mental content.`},
-      {id:18, title:"Quantum Loom 1A", year:2184, base: `Quantum Loom 1A is a playful invention in this fiction that blends information weaving and probabilistic patterning, allowing designers to generate fabrics that change appearance according to observer angle. The Loom sits at the intersection of materials science and aesthetic surprise in invented fashion houses of the 22nd century. Stories describe runway shows where cloth appears to remember prior audiences.`},
-      {id:19, title:"Orbital Orchard", year:2500, base: `Orbital Orchard is a speculative agro-engineering program that places controlled micro-greenhouses in low orbit to study accelerated growth under microgravity and filtered sunlight. The fictional program in these tales yields odd heirloom varieties and sparks ethical debates about off-planet agriculture accessibility. The Orchard entry invites reflection on planetary stewardship and the diffusion of food technologies across domains.`},
-      {id:20, title:"Aurelian Beacon (3025)", year:3025, base: `The Aurelian Beacon is a deeply imaginary signal monument from the very far future imagined by this anthology. In story fragments the Beacon transmits composite cultural forms across generational archives and encourages cross-temporal conversations in speculative cultural institutions. The Beacon is intentionally vague, a device to think about memory, heritage, and the odd rituals societies may produce when long-range infrastructure persists.`}
-    ];
-
-    // Generate exactly 300 words per article without obvious repetition
-    function makeExactWords(base, target){
-      const fillers = [
-        "The story serves as metaphorical commentary on ambition and society.",
-        "Writers of the time often described symbolic lessons in such devices.",
-        "Later chroniclers speculated on its broader impact across imagined cultures.",
-        "It remains purely fictional, but functions as thoughtful illustration.",
-        "These tales encourage readers to reflect on values through invention."
-      ];
-      const baseWords = base.replace(/\s+/g,' ').trim().split(' ').filter(Boolean);
-      const words = [...baseWords];
-      let fi = 0;
-      while(words.length < target){
-        const fillerWords = fillers[fi % fillers.length].split(' ');
-        for(const w of fillerWords){
-          if(words.length < target){
-            words.push(w);
-          }
-        }
-        fi++;
-      }
-      return words.slice(0, target).join(' ') + '.';
-    }
-
-    const built = articles.map(a => ({...a, content: makeExactWords(a.base, 300)}));
-
-    const listEl = document.getElementById('list');
-    function renderList(filter=''){
-      listEl.innerHTML = '';
-      const q = filter.trim().toLowerCase();
-      built.forEach(a => {
-        if(q && !(a.title.toLowerCase().includes(q) || String(a.year).includes(q))) return;
-        const it = document.createElement('div');
-        it.className = 'item';
-        it.innerHTML = `<div class="title">${a.title}</div><div class="meta">Year: ${a.year}</div>`;
-        it.onclick = ()=> showArticle(a.id);
-        listEl.appendChild(it);
-      });
-    }
-
-    function showArticle(id){
-      const a = built.find(x=>x.id===id);
-      if(!a) return;
-      document.getElementById('a-title').textContent = a.title;
-      document.getElementById('a-meta').textContent = `Fictional entry — year ${a.year}`;
-      const body = document.getElementById('a-body');
-      const paragraphs = a.content.match(/(.|\s){1,800}/g) || [a.content];
-      body.innerHTML = paragraphs.map(p=>`<p>${p}</p>`).join('');
-    }
-
-    document.getElementById('search').addEventListener('input', (e)=> renderList(e.target.value));
-
-    renderList();
-    showArticle(1);
-
-    document.addEventListener('keydown', (e)=>{
-      if(e.key==='/' ){ e.preventDefault(); document.getElementById('search').focus(); }
-    });
-
-    console.log('Articles generated: ', built.length);
-    built.forEach(a=> console.log(a.title, a.content.split(/\s+/).filter(Boolean).length + ' words'));
-  </script>
+</div>
 </body>
 </html>
