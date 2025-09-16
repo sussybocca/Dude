@@ -5,29 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Fauxipedia — Firebase Auth Example</title>
 <script type="module">
- <script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
-
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyAAwXf9R533sSoviyT3M83yawxwMsp80rg",
-    authDomain: "dude-918a5.firebaseapp.com",
-    projectId: "dude-918a5",
-    storageBucket: "dude-918a5.firebasestorage.app",
-    messagingSenderId: "210629790805",
-    appId: "1:210629790805:web:3b4ae0a8612c89bb1a98dc",
-    measurementId: "G-SN9X138J6W"
-  };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script> 
   // Firebase imports
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics.js";
@@ -56,12 +33,55 @@
   const logoutBtn = document.getElementById('logout-btn');
   const contentDiv = document.getElementById('content');
 
-  // Local fake articles
-  const articles = [...]; // same as before, 20 articles with base text
+  // Local fake articles (shortened list for example)
+  const articles = [
+    {id:1, title:"Cardiean Corporation", year:1776, base:"Cardiean is a legendary conglomerate founded in 1776 by John Coal. Its lore mixes hotels, gold mines, and the mythical Gold Cube valued at a trillion dollars. Over time, legends describe successors like Deshawnto, a troubled heir, who inherits both immense wealth and notoriety. This fictional article explores ambition, power, and corruption."},
+    {id:2, title:"ChronoSpindle (Temporal Loom)", year:1821, base:"The ChronoSpindle was a fictional 1821 machine weaving time into thread. Tales describe artisans glimpsing past mistakes to perfect their craft. Critics warned of paradoxes, while dramatists turned it into plays. It is a morality tale on tampering with time."},
+    {id:3, title:"Aetheric Telegraph", year:1839, base:"The Aetheric Telegraph, an imagined 1839 device, transmitted not only text but mood through an alleged aether medium. Poets and musicians claimed to hear emotional undertones in messages. Though mythical, it illustrates alternate communication evolution."}
+  ];
 
-  function makeExactWords(base, target){ /* same as before */ }
-  function renderList(){ /* same as before */ }
-  function showArticle(id){ /* same as before */ }
+  function makeExactWords(base, target){
+    const fillers = [
+      "The story serves as metaphorical commentary on ambition and society.",
+      "Later chroniclers speculated on its broader impact.",
+      "It remains purely fictional, but functions as illustration.",
+      "These tales encourage reflection on values through invention."
+    ];
+    const baseWords = base.replace(/\s+/g,' ').trim().split(' ').filter(Boolean);
+    const words = [...baseWords];
+    let fi = 0;
+    while(words.length < target){
+      const fillerWords = fillers[fi % fillers.length].split(' ');
+      for(const w of fillerWords){
+        if(words.length < target) words.push(w);
+      }
+      fi++;
+    }
+    return words.slice(0, target).join(' ') + '.';
+  }
+
+  function renderList(){
+    const listEl = document.getElementById('list');
+    listEl.innerHTML = '';
+    articles.forEach(a => {
+      const it = document.createElement('div');
+      it.className = 'item';
+      it.innerHTML = `<div class="title">${a.title}</div><div class="meta">Year: ${a.year}</div>`;
+      it.onclick = () => showArticle(a.id);
+      listEl.appendChild(it);
+    });
+  }
+
+  function showArticle(id){
+    const a = articles.find(x => x.id === id);
+    if(!a) return;
+    document.getElementById('a-title').textContent = a.title;
+    document.getElementById('a-meta').textContent = `Fictional entry — year ${a.year}`;
+    const body = document.getElementById('a-body');
+    const content = makeExactWords(a.base, 300);
+    const paragraphs = content.match(/(.|\s){1,800}/g) || [content];
+    body.innerHTML = paragraphs.map(p => `<p>${p}</p>`).join('');
+  }
 
   // Signup with email/password
   signupForm.addEventListener('submit', async (e)=>{
@@ -103,21 +123,29 @@
     await signOut(auth);
   });
 
-  // Auth state listener
-  onAuthStateChanged(auth, user => {
+  // Auth state listener — controls screen switching
+  onAuthStateChanged(auth, (user) => {
     if(user){
-      document.getElementById('auth-section').style.display = 'none';
-      contentDiv.style.display = 'flex';
+      document.getElementById("auth-section").style.display = "none";
+      contentDiv.style.display = "flex";
       renderList();
       showArticle(1);
     } else {
-      document.getElementById('auth-section').style.display = 'block';
-      contentDiv.style.display = 'none';
+      document.getElementById("auth-section").style.display = "block";
+      contentDiv.style.display = "none";
     }
   });
 </script>
 <style>
-/* same styles as before */
+body{font-family:Arial, sans-serif; margin:0; display:flex; flex-direction:column;}
+header{background:#0a59a6;color:#fff;padding:10px;font-size:20px}
+#auth-section{padding:20px;}
+#content{display:none; flex:1;}
+#app{display:flex;}
+nav{width:250px; border-right:1px solid #ddd; padding:10px}
+main{flex:1;padding:10px}
+.item{cursor:pointer;padding:5px;margin-bottom:5px;border-radius:4px}
+.item:hover{background:#eef}
 </style>
 </head>
 <body>
